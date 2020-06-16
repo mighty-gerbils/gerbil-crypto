@@ -1,0 +1,3 @@
+;; The Glow language
+(package: crypto
+ depend: ("github.com/fare/gerbil-utils"))
