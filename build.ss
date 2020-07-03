@@ -8,7 +8,7 @@
 
 (import
   :std/build-script :std/format
-  :clan/utils/filesystem :clan/utils/path)
+  :clan/utils/filesystem :clan/utils/path :clan/utils/version)
 
 (def here (path-parent (this-source-file)))
 
@@ -26,11 +26,12 @@
 
 (def (build-spec)
   [[gxc: "keccak" "-cc-options" (format "-I~a" here)]
-   [gxc: "secp256k1" secp256k1-options ...]])
+   [gxc: "secp256k1" secp256k1-options ...]
+   "version"])
 
 (def (main . args)
-  ;;(when (match args ([] #t) (["compile" . _] #t) (_ #f))
-  ;;  (update-version-from-git name: "Gerbil-Utils"))
+  (when (match args ([] #t) (["compile" . _] #t) (_ #f))
+    (update-version-from-git name: "Gerbil-crypto"))
   (defbuild-script ;; defines an inner "main"
     (build-spec)
     ;;verbose: 9

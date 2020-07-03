@@ -1,3 +1,3 @@
-;; The Glow language
+;; Extra cryptographic primitives for Gerbil
 (package: crypto
  depend: ("github.com/fare/gerbil-utils"))

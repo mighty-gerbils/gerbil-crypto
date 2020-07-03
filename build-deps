@@ -34,5 +34,6 @@
    std/foreign
    std/misc/bytes
    std/sugar
-   std/text/hex)))
+   std/text/hex))
+ (crypto/version "version" (clan/utils/version gerbil/core)))
 
