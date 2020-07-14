@@ -21,7 +21,7 @@
 (import
   :gerbil/gambit/exceptions
   :std/foreign :std/misc/bytes :std/text/hex :std/sugar
-  :clan/utils/base)
+  :utils/base)
 
 ;; Return an u8vector of length 32 that represents the digest of the input bytes
 ;; (taken from the given u8vector with given start and end positions, by default the entire u8vector),

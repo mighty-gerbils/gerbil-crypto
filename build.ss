@@ -8,7 +8,7 @@
 
 (import
   :std/build-script :std/format
-  :clan/utils/filesystem :clan/utils/path :clan/utils/version)
+  :utils/filesystem :utils/path :utils/versioning)
 
 (def here (path-parent (this-source-file)))
 

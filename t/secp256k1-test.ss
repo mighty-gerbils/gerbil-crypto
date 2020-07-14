@@ -2,7 +2,7 @@
 
 (import :gerbil/gambit/bytes
         :std/sugar :std/test :std/text/hex
-        :clan/utils/base :clan/utils/number
+        :utils/base :utils/number
         ../secp256k1)
 
 ;; Test vectors from ocaml's secp256k1-ml library
@@ -47,7 +47,7 @@
     (test-case "invalid signature"
       (def msg2 (b msgh))
       (def bytes-ref-set! bytes-set!)
-      (inc! (bytes-ref msg2 31))
+      (increment! (bytes-ref msg2 31))
       (check-equal?
        (verify-secp256k1-signature
         (secp256k1-signature<-bytes/der (b sig1h)) msg2 (secp256k1-pubkey<-bytes (b pk1h)))

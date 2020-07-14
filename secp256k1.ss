@@ -32,7 +32,7 @@
 (import
   :gerbil/gambit/bits :gerbil/gambit/bytes :gerbil/gambit/exceptions :gerbil/gambit/threads
   :std/foreign :std/misc/bytes :std/text/hex :std/sugar
-  :clan/utils/base)
+  :utils/base)
 
 (begin-ffi
     (secp256k1-context* secp256k1-pubkey* secp256k1-ecdsa-signature*

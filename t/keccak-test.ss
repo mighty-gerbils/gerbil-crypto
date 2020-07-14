@@ -3,7 +3,7 @@
 (import :gerbil/gambit/bytes
         :std/test
         :std/text/hex
-        :glow/crypto/keccak)
+        ../keccak)
 
 ;; keccak-test : TestSuite
 (def keccak-test

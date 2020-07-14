@@ -1,13 +1,13 @@
 (gerbil-build-deps-v2:
  (crypto/keccak
   (gxc: "keccak" "-cc-options" "-I/home/fare/src/fare/gerbil-crypto")
-  (clan/utils/base
-   gerbil/core
+  (gerbil/core
    gerbil/gambit/exceptions
    std/foreign
    std/misc/bytes
    std/sugar
-   std/text/hex))
+   std/text/hex
+   utils/base))
  (crypto/secp256k1
   (gxc:
    "secp256k1"
@@ -25,8 +25,7 @@
    "-L/run/current-system/sw/lib"
    "-cc-options"
    "-lsecp256k1")
-  (clan/utils/base
-   gerbil/core
+  (gerbil/core
    gerbil/gambit/bits
    gerbil/gambit/bytes
    gerbil/gambit/exceptions
@@ -34,6 +33,7 @@
    std/foreign
    std/misc/bytes
    std/sugar
-   std/text/hex))
- (crypto/version "version" (clan/utils/version gerbil/core)))
+   std/text/hex
+   utils/base))
+ (crypto/version "version" (gerbil/core utils/versioning)))
 
