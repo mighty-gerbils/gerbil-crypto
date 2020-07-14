@@ -1,3 +1,3 @@
 ;; Extra cryptographic primitives for Gerbil
-(package: crypto
+(package: clan/crypto
  depend: ("github.com/fare/gerbil-utils"))

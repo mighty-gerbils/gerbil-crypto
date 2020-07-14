@@ -2,7 +2,7 @@
 
 (import :gerbil/gambit/bytes
         :std/sugar :std/test :std/text/hex
-        :utils/base :utils/number
+        :clan/base :clan/number
         ../secp256k1)
 
 ;; Test vectors from ocaml's secp256k1-ml library

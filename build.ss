@@ -8,7 +8,7 @@
 
 (import
   :std/build-script :std/format
-  :utils/filesystem :utils/path :utils/versioning)
+  :clan/filesystem :clan/path :clan/versioning)
 
 (def here (path-parent (this-source-file)))
 
@@ -31,7 +31,7 @@
 
 (def (main . args)
   (when (match args ([] #t) (["compile" . _] #t) (_ #f))
-    (update-version-from-git name: "Gerbil-crypto"))
+    (update-version-from-git name: "Gerbil-crypto" deps: '("clan")))
   (defbuild-script ;; defines an inner "main"
     (build-spec)
     ;;verbose: 9
