@@ -7,33 +7,19 @@
 ;;   gxpkg install github.com/fare/gerbil-utils
 
 (import
-  :std/build-script :std/format
+  :clan/building :std/format
   :clan/filesystem :clan/path :clan/versioning)
 
 (def here (path-parent (this-source-file)))
 
-(current-directory here)
-
-;; TODO: somehow autodetect detect where this comes from...
-(def secp256k1-options
-  ["-cc-options" (format "-I~a" (path-expand "~/.nix-profile/include/"))
-   "-cc-options" "-I/nix/var/nix/profiles/default/include"
-   "-cc-options" "-I/run/current-system/sw/include"
-   "-cc-options" (format "-L~a" (path-expand "~/.nix-profile/lib/"))
-   "-cc-options" "-L/nix/var/nix/profiles/default/lib"
-   "-cc-options" "-L/run/current-system/sw/lib"
-   "-cc-options" "-lsecp256k1"])
-
 (def (build-spec)
   [[gxc: "keccak" "-cc-options" (format "-I~a" here)]
-   [gxc: "secp256k1" secp256k1-options ...]
+   [gxc: "secp256k1"]
    "version"])
 
-(def (main . args)
-  (when (match args ([] #t) (["compile" . _] #t) (_ #f))
-    (update-version-from-git name: "Gerbil-crypto" deps: '("clan")))
-  (defbuild-script ;; defines an inner "main"
-    (build-spec)
-    ;;verbose: 9
-    )
-  (apply main args))
+(init-build-environment!
+ name: "Gerbil-crypto"
+ deps: '("clan")
+ spec: build-spec
+ pkg-config-libs: '("libsecp256k1")
+ nix-deps: '("secp256k1"))
