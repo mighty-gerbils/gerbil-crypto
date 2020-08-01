@@ -1,8 +1,8 @@
 (export #t)
 
 (import :gerbil/gambit/bytes
-        :std/sugar :std/test :std/text/hex
-        :clan/base :clan/number
+        :std/misc/number :std/sugar :std/test :std/text/hex
+        :clan/base
         ../secp256k1)
 
 ;; Test vectors from ocaml's secp256k1-ml library
