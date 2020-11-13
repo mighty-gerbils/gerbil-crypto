@@ -15,6 +15,7 @@
 (def (build-spec)
   [[gxc: "keccak" "-cc-options" (format "-I~a" here)]
    [gxc: "secp256k1"]
+   [gxc: "blake2"]
    "version"])
 
 (init-build-environment!
