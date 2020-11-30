@@ -8,7 +8,7 @@
 
 (import
   :clan/building :std/format
-  :clan/filesystem :clan/path :clan/versioning)
+  :clan/filesystem :clan/path :clan/versioning :clan/multicall)
 
 (def here (path-parent (this-source-file)))
 
@@ -24,3 +24,9 @@
  spec: build-spec
  pkg-config-libs: '("libsecp256k1")
  nix-deps: '("secp256k1"))
+
+(define-entry-point (nix)
+  "Build using nix-build"
+  (create-version-file)
+  (run-process ["nix-build"])
+  (void))
