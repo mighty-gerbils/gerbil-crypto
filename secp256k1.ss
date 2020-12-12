@@ -3,6 +3,9 @@
 ;;
 ;; To be linked with libsecp256k1: -lsecp256k1
 
+;; TODO: use opaque objects, not arrays, for secret keys and for signatures,
+;; and only allow importing / exporting the data as array via marshalling to a standard format.
+
 (export
   secp256k1-pubkey<-bytes
   bytes<-secp256k1-pubkey
@@ -377,7 +380,7 @@ END-C
   (with-secp256k1-ctx/check secp256k1-ec-pubkey-parse pubkey bytes)
   pubkey)
 
-;; : Bytes <- Pubkey Boolx
+;; : Bytes <- Pubkey Bool
 (def (bytes<-secp256k1-pubkey pubkey (compressed? #f))
   (def bytes (make-bytes (if compressed? 33 65)))
   (with-secp256k1-ctx secp256k1-ec-pubkey-serialize bytes pubkey)
