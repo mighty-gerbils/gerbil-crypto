@@ -3,7 +3,7 @@
 (import :gerbil/gambit/bytes
         :std/misc/number :std/sugar :std/test :std/text/hex
         :clan/base
-        ../secp256k1)
+        ../secp256k1 ../secp256k1-ffi)
 
 ;; Test vectors from ocaml's secp256k1-ml library
 (def msgh ;; sha256 for "testing"
