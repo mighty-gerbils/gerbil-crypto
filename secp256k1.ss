@@ -1,7 +1,7 @@
 (export #t)
 (import
   :gerbil/gambit/bits :gerbil/gambit/bytes :gerbil/gambit/foreign
-  :std/misc/bytes :std/misc/repr
+  :std/misc/bytes :std/misc/repr :std/text/hex
   :clan/base :clan/io
   :clan/poo/object :clan/poo/brace :clan/poo/mop :clan/poo/type :clan/poo/io :clan/poo/number
   ./random ./secp256k1-ffi)
@@ -50,3 +50,58 @@
    .<-json: (lambda (x) (.<-bytes (<-json Bytes x)))
    .string<-: .json<-
    .<-string: .<-json})
+
+(defstruct secp256k1-sig (data) print: #f equal: #t)
+
+;; TODO: Handle decoding to/from Ethereum-style v,r,s with magic chain-id dependent v.
+(def (marshal-signature signature port)
+  (defvalues (bytes recid) (bytes<-secp256k1-recoverable-signature (secp256k1-sig-data signature)))
+  (write-bytes bytes port)
+  (write-byte (+ recid 27) port))
+
+(def (unmarshal-signature port)
+  (def compact (unmarshal-n-bytes 64 port))
+  (def recid (- (read-byte port) 27))
+  (secp256k1-sig (secp256k1-recoverable-signature<-bytes compact recid)))
+
+(def Bytes65 (BytesN 65))
+
+(.def (Signature @ [methods.bytes<-marshal Type.] .bytes<- .<-bytes)
+   sexp: 'Signature
+   .length-in-bytes: 65
+   .element?: (lambda (x) (and (secp256k1-sig? x) (element? Bytes65 (secp256k1-sig-data x))))
+   .marshal: marshal-signature
+   .unmarshal: unmarshal-signature
+   .sexp<-: (lambda (x) `(<-json Signature ,(.json<- x)))
+   .string<-: (compose hex-encode .bytes<-)
+   .<-string: (compose .<-bytes hex-decode)
+   .json<-: .string<-
+   .<-json: .<-string)
+
+(def (vrs<-signature sig)
+  (def bytes (bytes<- Signature sig))
+  (def v (bytes-ref bytes 64))
+  (def r (u8vector-uint-ref bytes 0 big 32))
+  (def s (u8vector-uint-ref bytes 32 big 32))
+  (values v r s))
+
+(def (signature<-vrs v r s)
+  (def bytes (make-bytes 65))
+  (u8vector-uint-set! bytes 0 r big 32)
+  (u8vector-uint-set! bytes 32 s big 32)
+  (bytes-set! bytes 64 v)
+  (<-bytes Signature bytes))
+
+#; ;;TODO: figure out why this message will work at the REPL but not here even with (import :std/misc/repr) (import :clan/poo/brace) and/or (import (prefix-in (only-in <MOP> @method) @))
+(defmethod (@@method :pr secp256k1-sig)
+  (λ (self (port (current-output-port)) (options (current-representation-options)))
+    (write (sexp<- Signature self) port)))
+
+;; Signature <- 'a:Type SecKey 'a
+(def (make-message-signature secret-key message32)
+  (secp256k1-sig
+   (make-secp256k1-recoverable-signature message32 (secp256k1-seckey-data secret-key))))
+
+;; (OrFalse PublicKey) <- Signature Digest
+(def (recover-signer-public-key signature message32)
+  (with-catch false (cut secp256k1-recover (secp256k1-sig-data signature) message32)))
