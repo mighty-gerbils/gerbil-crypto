@@ -26,7 +26,7 @@
  nix-deps: '("secp256k1"))
 
 (define-entry-point (nix)
-  "Build using nix-build"
+  (help: "Build using nix-build" getopt: [])
   (create-version-file)
   (run-process ["nix-build"])
   (void))
