@@ -34,7 +34,10 @@
 
 (import
   :gerbil/gambit/bits :gerbil/gambit/bytes :gerbil/gambit/exceptions :gerbil/gambit/threads
-  :std/foreign :std/misc/bytes :std/text/hex :std/sugar
+  :std/assert :std/foreign
+  :std/misc/bytes
+  :std/sugar
+  :std/text/hex
   :clan/base)
 
 (begin-ffi
