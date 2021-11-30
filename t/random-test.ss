@@ -1,7 +1,7 @@
 (export #t)
 
 (import :gerbil/gambit/bits
-        :std/iter :std/sugar :std/test
+        :std/iter :std/sugar :std/assert :std/test
         ../random)
 
 (def random-test
