@@ -166,12 +166,12 @@ static int ffi_secp256k1_ec_pubkey_create(const secp256k1_context* ctx, secp256k
 
 static int ffi_secp256k1_ec_seckey_negate(const secp256k1_context* ctx, ___SCMOBJ seckey)
 {
-  return secp256k1_ec_privkey_negate(ctx, U8_DATA(seckey)); // not yet renamed in nixos
+  return secp256k1_ec_seckey_negate(ctx, U8_DATA(seckey));
 }
 
 static int ffi_secp256k1_ec_seckey_tweak_add(const secp256k1_context* ctx, ___SCMOBJ seckey, ___SCMOBJ tweak)
 {
-  return secp256k1_ec_privkey_tweak_add(ctx, U8_DATA(seckey), U8_DATA(tweak)); // not yet renamed in nixos
+  return secp256k1_ec_seckey_tweak_add(ctx, U8_DATA(seckey), U8_DATA(tweak));
 }
 
 static int ffi_secp256k1_ec_pubkey_tweak_add(const secp256k1_context* ctx, secp256k1_pubkey *pubkey, ___SCMOBJ tweak)
@@ -181,7 +181,7 @@ static int ffi_secp256k1_ec_pubkey_tweak_add(const secp256k1_context* ctx, secp2
 
 static int ffi_secp256k1_ec_seckey_tweak_mul(const secp256k1_context* ctx, ___SCMOBJ seckey, ___SCMOBJ tweak)
 {
-  return secp256k1_ec_privkey_tweak_mul(ctx, U8_DATA(seckey), U8_DATA(tweak));  // not yet renamed in nixos
+  return secp256k1_ec_seckey_tweak_mul(ctx, U8_DATA(seckey), U8_DATA(tweak));
 }
 
 static int ffi_secp256k1_ec_pubkey_tweak_mul(const secp256k1_context* ctx, secp256k1_pubkey *pubkey, ___SCMOBJ tweak)
