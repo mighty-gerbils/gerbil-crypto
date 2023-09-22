@@ -1,6 +1,6 @@
 (export #t)
 
-(import :gerbil/gambit/bytes
+(import :gerbil/gambit
         :std/misc/number :std/sugar :std/test :std/text/hex
         :clan/base
         ../secp256k1 ../secp256k1-ffi)

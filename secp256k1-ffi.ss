@@ -33,7 +33,7 @@
   secp256k1-recover)
 
 (import
-  :gerbil/gambit/bits :gerbil/gambit/bytes :gerbil/gambit/exceptions :gerbil/gambit/threads
+  :gerbil/gambit
   :std/assert :std/foreign
   :std/misc/bytes
   :std/sugar

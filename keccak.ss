@@ -19,7 +19,7 @@
 (export #t)
 
 (import
-  :gerbil/gambit/exceptions
+  :gerbil/gambit
   :std/foreign :std/misc/bytes :std/text/hex :std/sugar
   :clan/base)
 

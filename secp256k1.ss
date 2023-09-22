@@ -1,6 +1,6 @@
 (export #t)
 (import
-  :gerbil/gambit/bits :gerbil/gambit/bytes :gerbil/gambit/foreign
+  :gerbil/gambit
   :std/misc/bytes :std/misc/repr :std/text/hex
   :clan/base :clan/io
   :clan/poo/object :clan/poo/brace :clan/poo/mop :clan/poo/type :clan/poo/io :clan/poo/number
@@ -45,7 +45,7 @@
    ;; uncompressed public key has an extra byte at the beginning, which we remove:
    ;; https://bitcoin.stackexchange.com/questions/57855/c-secp256k1-what-do-prefixes-0x06-and-0x07-in-an-uncompressed-public-key-signif
    .bytes<-: (lambda (k) (subu8vector (bytes<-secp256k1-pubkey k) 1 65))
-   .<-bytes: (lambda (b) (secp256k1-pubkey<-bytes (bytes-append #u8(4) b)))
+   .<-bytes: (lambda (b) (secp256k1-pubkey<-bytes (u8vector-append #u8(4) b)))
    .json<-: (lambda (x) (json<- .Bytes (.bytes<- x)))
    .<-json: (lambda (x) (.<-bytes (<-json Bytes x)))
    .string<-: .json<-
@@ -60,7 +60,7 @@
   (write-byte (+ recid 27) port))
 
 (def (unmarshal-signature port)
-  (def compact (unmarshal-n-bytes 64 port))
+  (def compact (unmarshal-n-u8 64 port))
   (def recid (- (read-byte port) 27))
   (secp256k1-sig (secp256k1-recoverable-signature<-bytes compact recid)))
 

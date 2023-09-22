@@ -1,6 +1,6 @@
 (export #t)
 
-(import :gerbil/gambit/bytes
+(import :gerbil/gambit
         :std/test
         :std/text/hex
         ../blake2)
