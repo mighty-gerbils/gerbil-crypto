@@ -360,7 +360,7 @@ END-C
 
 (def secp256k1-mutex (make-mutex 'secp256k1))
 
-(def (bytesN? x n) (and (bytes? x) (= (bytes-length x) n)))
+(def (bytesN? x n) (and (u8vector? x) (= (u8vector-length x) n)))
 (def (bytes32? x) (bytesN? x 32))
 (def (bytes33? x) (bytesN? x 33))
 (def (bytes64? x) (bytesN? x 64))
@@ -385,7 +385,7 @@ END-C
 
 ;; : Bytes <- Pubkey Bool
 (def (bytes<-secp256k1-pubkey pubkey (compressed? #f))
-  (def bytes (make-bytes (if compressed? 33 65)))
+  (def bytes (make-u8vector (if compressed? 33 65)))
   (with-secp256k1-ctx secp256k1-ec-pubkey-serialize bytes pubkey)
   bytes)
 
@@ -407,13 +407,13 @@ END-C
 
 ;; : Bytes <- Sig
 (def (bytes<-secp256k1-signature/der sig)
-  (def bytes (make-bytes 71))
+  (def bytes (make-u8vector 71))
   (def len (with-secp256k1-ctx/check secp256k1-ecdsa-signature-serialize-der bytes sig))
   (if (= len 71) bytes (subu8vector bytes 0 len)))
 
 ;; : Bytes64 <- Sig
 (def (bytes<-secp256k1-signature/compact sig)
-  (def bytes (make-bytes 64))
+  (def bytes (make-u8vector 64))
   (with-secp256k1-ctx secp256k1-ecdsa-signature-serialize-compact bytes sig)
   bytes)
 
@@ -491,7 +491,7 @@ END-C
 ;; RSig <- Bytes64 UInt2
 (def (secp256k1-recoverable-signature<-bytes bytes recid)
   (assert! (and (bytes64? bytes) (<= 0 recid 3)))
-  (def ersig (make-bytes 65))
+  (def ersig (make-u8vector 65))
   (with-secp256k1-ctx/check secp256k1-ecdsa-recoverable-signature-parse-compact ersig bytes recid)
   ersig)
 
@@ -507,14 +507,14 @@ END-C
 ;; for information about recovery id
 (def (bytes<-secp256k1-recoverable-signature rsig)
   (assert! (bytes65? rsig))
-  (def bytes (make-bytes 64))
+  (def bytes (make-u8vector 64))
   (values bytes
           (with-secp256k1-ctx/check secp256k1-ecdsa-recoverable-signature-serialize-compact bytes rsig)))
 
 ;; RSig <- Bytes32 Seckey
 (def (make-secp256k1-recoverable-signature msg32 seckey)
   (assert! (and (bytes32? msg32) (bytes32? seckey)))
-  (def rsig (make-bytes 65))
+  (def rsig (make-u8vector 65))
   (with-secp256k1-ctx/check secp256k1-ecdsa-sign-recoverable rsig msg32 seckey)
   rsig)
 

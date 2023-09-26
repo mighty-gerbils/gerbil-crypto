@@ -1,8 +1,8 @@
 (export #t)
 
 (import
-  :gerbil/gambit
-  :std/crypto/etc
+  (only-in :gerbil/gambit extract-bit-field)
+  (only-in :std/crypto/etc random-bytes)
   :std/misc/bytes)
 
 (def (randomUIntN n-bits)

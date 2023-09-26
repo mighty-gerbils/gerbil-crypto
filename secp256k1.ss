@@ -56,12 +56,12 @@
 ;; TODO: Handle decoding to/from Ethereum-style v,r,s with magic chain-id dependent v.
 (def (marshal-signature signature port)
   (defvalues (bytes recid) (bytes<-secp256k1-recoverable-signature (secp256k1-sig-data signature)))
-  (write-bytes bytes port)
-  (write-byte (+ recid 27) port))
+  (write-u8vector bytes port)
+  (write-u8 (+ recid 27) port))
 
 (def (unmarshal-signature port)
   (def compact (unmarshal-n-u8 64 port))
-  (def recid (- (read-byte port) 27))
+  (def recid (- (read-u8 port) 27))
   (secp256k1-sig (secp256k1-recoverable-signature<-bytes compact recid)))
 
 (def Bytes65 (BytesN 65))
@@ -80,16 +80,16 @@
 
 (def (vrs<-signature sig)
   (def bytes (bytes<- Signature sig))
-  (def v (bytes-ref bytes 64))
+  (def v (u8vector-ref bytes 64))
   (def r (u8vector-uint-ref bytes 0 big 32))
   (def s (u8vector-uint-ref bytes 32 big 32))
   (values v r s))
 
 (def (signature<-vrs v r s)
-  (def bytes (make-bytes 65))
+  (def bytes (make-u8vector 65))
   (u8vector-uint-set! bytes 0 r big 32)
   (u8vector-uint-set! bytes 32 s big 32)
-  (bytes-set! bytes 64 v)
+  (u8vector-set! bytes 64 v)
   (<-bytes Signature bytes))
 
 #; ;;TODO: figure out why this message will work at the REPL but not here even with (import :std/misc/repr) (import :clan/poo/brace) and/or (import (prefix-in (only-in <MOP> @method) @))

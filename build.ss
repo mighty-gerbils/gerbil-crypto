@@ -8,8 +8,9 @@
 ;;   gxpkg install github.com/fare/gerbil-poo
 
 (import
-  :clan/building :std/format
-  :clan/filesystem :clan/path :clan/versioning :clan/multicall)
+  :std/format :std/misc/path
+  :clan/building
+  :clan/filesystem :clan/versioning :clan/multicall)
 
 (def here (path-parent (this-source-file)))
 
