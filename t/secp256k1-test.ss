@@ -35,7 +35,7 @@
       (check-parse/serialize (compose bytes<-secp256k1-signature/compact secp256k1-signature<-bytes/der)
                              (compose bytes<-secp256k1-signature/der secp256k1-signature<-bytes/compact)
                              sig1h)
-      (check-equal? (bytes-length (bytes<-secp256k1-pubkey (secp256k1-pubkey<-bytes (b pk2h)) #t)) 33))
+      (check-equal? (u8vector-length (bytes<-secp256k1-pubkey (secp256k1-pubkey<-bytes (b pk2h)) #t)) 33))
     (test-case "valid signature"
       (check-equal? (verify-secp256k1-signature
                      (secp256k1-signature<-bytes/der (b sig1h))
@@ -46,8 +46,8 @@
                     sig2h))
     (test-case "invalid signature"
       (def msg2 (b msgh))
-      (def bytes-ref-set! bytes-set!)
-      (increment! (bytes-ref msg2 31))
+      (def u8vector-ref-set! u8vector-set!)
+      (increment! (u8vector-ref msg2 31))
       (check-equal?
        (verify-secp256k1-signature
         (secp256k1-signature<-bytes/der (b sig1h)) msg2 (secp256k1-pubkey<-bytes (b pk1h)))
