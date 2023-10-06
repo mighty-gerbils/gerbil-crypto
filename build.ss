@@ -16,6 +16,7 @@
 
 (def (build-spec)
   [[gxc: "keccak" "-cc-options" (format "-I~a" here)]
+   [static-include: "keccak-tiny-unrolled.c"]
    "secp256k1-ffi" "secp256k1" "blake2"
    "password" "random" "version"])
 
