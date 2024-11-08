@@ -18,7 +18,7 @@
 (def (build-spec)
   [[gxc: "keccak" "-cc-options" (format "-I~a" here)]
    [static-include: "keccak-tiny-unrolled.c"]
-   "ed25519-ffi" "secp256k1-ffi" "secp256k1" "blake2"
+   "ed25519-ffi" "ed25519" "secp256k1-ffi" "secp256k1" "blake2"
    "password" "random" "version"])
 
 (init-build-environment!
