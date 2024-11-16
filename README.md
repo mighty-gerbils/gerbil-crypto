@@ -23,10 +23,12 @@ Then you must install the [Gerbil Clan](https://github.com/fare/gerbil-utils) ut
 and the [Gerbil-POO](https://github.com/fare/gerbil-poo) object system,
 which `gxpkg` may automatically download for you.
 
-Finally, you also need to install the `libsecp256k1` library.
-The nix recipe for `gerbil-crypto` does it for you.
-On Debian or Ubuntu, you may use to `apt install libsecp256k1-dev`
-and YMMV on other Linux distributions.
+Finally, you need to install the following libraries:
+- `libsecp256k1`: On Debian/Ubuntu, install with `apt install libsecp256k1-dev`
+- `libsodium`: On Debian/Ubuntu, install with `apt install libsodium-dev`
+
+The nix recipe for `gerbil-crypto` installs these dependencies automatically.
+YMMV on other Linux distributions.
 
 ### Building
 
