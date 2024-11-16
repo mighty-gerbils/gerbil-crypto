@@ -2,9 +2,14 @@
 (import
   :gerbil/gambit
   :std/misc/bytes :std/misc/repr :std/text/hex
+  :std/assert
   :clan/base :clan/io
   :clan/poo/object :clan/poo/brace :clan/poo/mop :clan/poo/type :clan/poo/io :clan/poo/number
   ./random ./ed25519-ffi)
+
+(def (bytesN? x n) (and (u8vector? x) (= (u8vector-length x) n)))
+(def (bytes32? x) (bytesN? x 32))
+(def (bytes64? x) (bytesN? x 64))
 
 ;; Hide secret keys behind opaque data structure
 (defstruct ed25519-seckey (data) print: #f equal: #t)
@@ -28,25 +33,19 @@
 (def (import-secret-key/json j) (import-secret-key/bytes (<-json Bytes64 j)))
 (def (export-secret-key/json x) (json<- Bytes64 (export-secret-key/bytes x)))
 
-;; Generate secret key from seed
-(def (generate-secret-key-from-seed seed)
-  (assert! (bytes32? seed))
-  (ed25519-seckey (ed25519ph-seckey<-seed seed)))
-
-;; Public key type
+;; Define types for public key and signature
 (define-type PublicKey
   {(:: @ [methods.marshal<-bytes Type.])
    .Bytes: Bytes32
-   .element?: bytes32?
+   .element?: (lambda (x) (bytesN? x 32))
    .sexp<-: (lambda (k) `(<-json PublicKey ,(.json<- k)))
    .bytes<-: identity
-   .<-bytes: ed25519ph-pubkey<-bytes
+   .<-bytes: (lambda (b) (ed25519-pubkey<-bytes b))
    .json<-: (lambda (x) (json<- .Bytes (.bytes<- x)))
    .<-json: (lambda (x) (.<-bytes (<-json Bytes x)))
    .string<-: .json<-
    .<-string: .<-json})
 
-;; Signature type
 (defstruct ed25519-sig (data) print: #f equal: #t)
 
 (def (marshal-signature signature port)
@@ -68,37 +67,41 @@
    .json<-: .string<-
    .<-json: .<-string)
 
-;; Create signature from message and secret key
+;; Key generation functions
+(def (generate-keypair)
+  (defvalues (pk sk) (ed25519-keypair))
+  (values pk (ed25519-seckey sk)))
+
+(def (generate-keypair/seed seed)
+  (assert! (bytes32? seed))
+  (defvalues (pk sk) (ed25519-seed-keypair seed))
+  (values pk (ed25519-seckey sk)))
+
+;; Signature creation and verification
 (def (make-message-signature secret-key message)
   (ed25519-sig
-   (make-ed25519ph-signature message (ed25519-seckey-data secret-key))))
+   (make-ed25519-signature message (ed25519-seckey-data secret-key))))
 
-;; Verify signature
-(def (verify-message-signature signature pubkey message)
-  (verify-ed25519ph-signature 
+(def (verify-signature signature message public-key)
+  (verify-ed25519-signature 
    (ed25519-sig-data signature)
    message
-   pubkey))
+   public-key))
 
-;; Derive public key from secret key
-(def (public-key-from-secret-key secret-key)
-  (ed25519ph-pubkey<-seckey (ed25519-seckey-data secret-key)))
+;; Key conversion utilities
+(def (public-key<-secret-key secret-key)
+  (ed25519-pubkey<-seckey (ed25519-seckey-data secret-key)))
 
-;; Verify secret key is valid
-(def (verify-secret-key secret-key)
-  (verify-ed25519ph-seckey (ed25519-seckey-data secret-key)))
+(def (secret-key->seed secret-key)
+  (ed25519-sk-to-seed (ed25519-seckey-data secret-key)))
 
-;; Helper functions for bytes type checking
-(def (bytesN? x n) 
-  (and (u8vector? x) (= (u8vector-length x) n)))
+(def (public-key->curve25519 public-key)
+  (ed25519-pk-to-curve25519 public-key))
 
-(def (bytes32? x) 
-  (bytesN? x 32))
+(def (secret-key->curve25519 secret-key)
+  (ed25519-sk-to-curve25519 (ed25519-seckey-data secret-key)))
 
-(def (bytes64? x)
-  (bytesN? x 64))
-
-;; Helper for assertions
-(def (assert! condition . args)
-  (unless condition
-    (apply error args))) 
+;; Pretty printing for signatures
+(defmethod (@@method :pr ed25519-sig)
+  (λ (self (port (current-output-port)) (options (current-representation-options)))
+    (write (sexp<- Signature self) port)))

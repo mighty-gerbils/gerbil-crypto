@@ -1,47 +1,47 @@
 ;;; -*- Scheme -*-
-;;;; Gerbil FFI for ed25519
-;;
-;; To be linked with libsodium
+;;;; Gerbil FFI for libsodium ed25519
 
 (export
-  ed25519ph-pubkey<-bytes
-  bytes<-ed25519ph-pubkey
-  ed25519ph-signature<-bytes
-  bytes<-ed25519ph-signature
-  verify-ed25519ph-signature
-  make-ed25519ph-signature
-  verify-ed25519ph-seckey
-  ed25519ph-pubkey<-seckey
-  ed25519ph-seckey<-seed
-  ed25519ph-pubkey<-seckey-direct)
+  ed25519-pubkey<-bytes
+  bytes<-ed25519-pubkey
+  ed25519-signature<-bytes
+  bytes<-ed25519-signature
+  verify-ed25519-signature
+  make-ed25519-signature
+  verify-ed25519-seckey
+  ed25519-pubkey<-seckey
+  ed25519-keypair
+  ed25519-seed-keypair
+  ed25519-sk-to-pk
+  ed25519-sk-to-seed
+  ed25519-pk-to-curve25519
+  ed25519-sk-to-curve25519)
 
 (import
   :gerbil/gambit
-  :std/assert
-  :std/foreign
+  :std/assert :std/foreign
   :std/misc/bytes
   :std/sugar
   :std/text/hex
   :clan/base)
 
 (begin-ffi
-  (ed25519ph-state*
-   ffi-crypto-sign-ed25519ph-statebytes
-   ffi-crypto-sign-ed25519-bytes
-   ffi-crypto-sign-ed25519-seedbytes
-   ffi-crypto-sign-ed25519-publickeybytes
-   ffi-crypto-sign-ed25519-secretkeybytes
-   ffi-crypto-sign-ed25519-sk-to-seed
-   ffi-crypto-sign-ed25519-sk-to-pk
-   ffi-crypto-sign-ed25519ph-init
-   ffi-crypto-sign-ed25519ph-update
-   ffi-crypto-sign-ed25519ph-final-create
-   ffi-crypto-sign-ed25519ph-final-verify)
+  (ed25519-context*
+   crypto_sign_ed25519_BYTES
+   crypto_sign_ed25519_PUBLICKEYBYTES
+   crypto_sign_ed25519_SECRETKEYBYTES
+   crypto_sign_ed25519_SEEDBYTES
+   crypto_sign_ed25519_keypair
+   crypto_sign_ed25519_seed_keypair
+   crypto_sign_ed25519_sk_to_pk
+   crypto_sign_ed25519_sk_to_seed
+   crypto_sign_ed25519_pk_to_curve25519
+   crypto_sign_ed25519_sk_to_curve25519
+   crypto_sign_ed25519_detached
+   crypto_sign_ed25519_verify_detached)
 
 (c-declare #<<END-C
-#include <string.h>
-#include <sodium/crypto_hash_sha512.h>
-#include <sodium/crypto_sign_ed25519.h>
+#include <sodium.h>
 
 #ifndef ___HAVE_FFI_U8VECTOR
 #define ___HAVE_FFI_U8VECTOR
@@ -49,34 +49,14 @@
 #define U8_LEN(obj) ___HD_BYTES (___HEADER (obj))
 #endif
 
-static size_t ffi_crypto_sign_ed25519ph_statebytes(void)
+static int ffi_crypto_sign_ed25519_keypair(___SCMOBJ pk, ___SCMOBJ sk)
 {
-  return crypto_sign_ed25519ph_statebytes();
+  return crypto_sign_ed25519_keypair(U8_DATA(pk), U8_DATA(sk));
 }
 
-static size_t ffi_crypto_sign_ed25519_bytes(void)
+static int ffi_crypto_sign_ed25519_seed_keypair(___SCMOBJ pk, ___SCMOBJ sk, ___SCMOBJ seed)
 {
-  return crypto_sign_ed25519_bytes();
-}
-
-static size_t ffi_crypto_sign_ed25519_seedbytes(void)
-{
-  return crypto_sign_ed25519_seedbytes();
-}
-
-static size_t ffi_crypto_sign_ed25519_publickeybytes(void)
-{
-  return crypto_sign_ed25519_publickeybytes();
-}
-
-static size_t ffi_crypto_sign_ed25519_secretkeybytes(void)
-{
-  return crypto_sign_ed25519_secretkeybytes();
-}
-
-static int ffi_crypto_sign_ed25519_sk_to_seed(___SCMOBJ seed, ___SCMOBJ sk)
-{
-  return crypto_sign_ed25519_sk_to_seed(U8_DATA(seed), U8_DATA(sk));
+  return crypto_sign_ed25519_seed_keypair(U8_DATA(pk), U8_DATA(sk), U8_DATA(seed));
 }
 
 static int ffi_crypto_sign_ed25519_sk_to_pk(___SCMOBJ pk, ___SCMOBJ sk)
@@ -84,171 +64,169 @@ static int ffi_crypto_sign_ed25519_sk_to_pk(___SCMOBJ pk, ___SCMOBJ sk)
   return crypto_sign_ed25519_sk_to_pk(U8_DATA(pk), U8_DATA(sk));
 }
 
-static int ffi_crypto_sign_ed25519ph_init(crypto_sign_ed25519ph_state *state)
+static int ffi_crypto_sign_ed25519_sk_to_seed(___SCMOBJ seed, ___SCMOBJ sk)
 {
-  return crypto_sign_ed25519ph_init(state);
+  return crypto_sign_ed25519_sk_to_seed(U8_DATA(seed), U8_DATA(sk));
 }
 
-static int ffi_crypto_sign_ed25519ph_update(crypto_sign_ed25519ph_state *state, ___SCMOBJ m)
+static int ffi_crypto_sign_ed25519_pk_to_curve25519(___SCMOBJ curve25519_pk, ___SCMOBJ ed25519_pk)
 {
-  return crypto_sign_ed25519ph_update(state, U8_DATA(m), U8_LEN(m));
+  return crypto_sign_ed25519_pk_to_curve25519(U8_DATA(curve25519_pk), U8_DATA(ed25519_pk));
 }
 
-static int ffi_crypto_sign_ed25519ph_final_create(crypto_sign_ed25519ph_state *state, ___SCMOBJ sig, ___SCMOBJ sk)
+static int ffi_crypto_sign_ed25519_sk_to_curve25519(___SCMOBJ curve25519_sk, ___SCMOBJ ed25519_sk)
+{
+  return crypto_sign_ed25519_sk_to_curve25519(U8_DATA(curve25519_sk), U8_DATA(ed25519_sk));
+}
+
+static int ffi_crypto_sign_ed25519_detached(___SCMOBJ sig, ___SCMOBJ msg, ___SCMOBJ sk)
 {
   unsigned long long siglen;
-  int result = crypto_sign_ed25519ph_final_create(state, U8_DATA(sig), &siglen, U8_DATA(sk));
-  return result == 0 ? siglen : -1;
+  return crypto_sign_ed25519_detached(U8_DATA(sig), &siglen, U8_DATA(msg), U8_LEN(msg), U8_DATA(sk));
 }
 
-static int ffi_crypto_sign_ed25519ph_final_verify(crypto_sign_ed25519ph_state *state, ___SCMOBJ sig, ___SCMOBJ pk)
+static int ffi_crypto_sign_ed25519_verify_detached(___SCMOBJ sig, ___SCMOBJ msg, ___SCMOBJ pk)
 {
-  return crypto_sign_ed25519ph_final_verify(state, U8_DATA(sig), U8_DATA(pk));
+  return crypto_sign_ed25519_verify_detached(U8_DATA(sig), U8_DATA(msg), U8_LEN(msg), U8_DATA(pk));
 }
 
 END-C
 )
 
-(c-define-type crypto-sign-ed25519ph-state "crypto_sign_ed25519ph_state")
-(c-define-type crypto-sign-ed25519ph-state*
-  (pointer crypto-sign-ed25519ph-state (crypto-sign-ed25519ph-state*)))
+(define-const crypto_sign_ed25519_BYTES)
+(define-const crypto_sign_ed25519_PUBLICKEYBYTES)
+(define-const crypto_sign_ed25519_SECRETKEYBYTES)
+(define-const crypto_sign_ed25519_SEEDBYTES)
 
-(define-c-lambda ffi-crypto-sign-ed25519ph-statebytes
-  () size_t
-  "ffi_crypto_sign_ed25519ph_statebytes")
-
-(define-c-lambda ffi-crypto-sign-ed25519-bytes
-  () size_t
-  "ffi_crypto_sign_ed25519_bytes")
-
-(define-c-lambda ffi-crypto-sign-ed25519-seedbytes
-  () size_t
-  "ffi_crypto_sign_ed25519_seedbytes")
-
-(define-c-lambda ffi-crypto-sign-ed25519-publickeybytes
-  () size_t
-  "ffi_crypto_sign_ed25519_publickeybytes")
-
-(define-c-lambda ffi-crypto-sign-ed25519-secretkeybytes
-  () size_t
-  "ffi_crypto_sign_ed25519_secretkeybytes")
-
-(define-c-lambda ffi-crypto-sign-ed25519-sk-to-seed
+(define-c-lambda crypto_sign_ed25519_keypair
   (scheme-object scheme-object) int
-  "ffi_crypto_sign_ed25519_sk_to_seed")
+  "ffi_crypto_sign_ed25519_keypair")
 
-(define-c-lambda ffi-crypto-sign-ed25519-sk-to-pk
+(define-c-lambda crypto_sign_ed25519_seed_keypair
+  (scheme-object scheme-object scheme-object) int
+  "ffi_crypto_sign_ed25519_seed_keypair")
+
+(define-c-lambda crypto_sign_ed25519_sk_to_pk
   (scheme-object scheme-object) int
   "ffi_crypto_sign_ed25519_sk_to_pk")
 
-(define-c-lambda ffi-crypto-sign-ed25519ph-init
-  (crypto-sign-ed25519ph-state*) int
-  "ffi_crypto_sign_ed25519ph_init")
+(define-c-lambda crypto_sign_ed25519_sk_to_seed
+  (scheme-object scheme-object) int
+  "ffi_crypto_sign_ed25519_sk_to_seed")
 
-(define-c-lambda ffi-crypto-sign-ed25519ph-update
-  (crypto-sign-ed25519ph-state* scheme-object) int
-  "ffi_crypto_sign_ed25519ph_update")
+(define-c-lambda crypto_sign_ed25519_pk_to_curve25519
+  (scheme-object scheme-object) int
+  "ffi_crypto_sign_ed25519_pk_to_curve25519")
 
-(define-c-lambda ffi-crypto-sign-ed25519ph-final-create
-  (crypto-sign-ed25519ph-state* scheme-object scheme-object) int
-  "ffi_crypto_sign_ed25519ph_final_create")
+(define-c-lambda crypto_sign_ed25519_sk_to_curve25519
+  (scheme-object scheme-object) int
+  "ffi_crypto_sign_ed25519_sk_to_curve25519")
 
-(define-c-lambda ffi-crypto-sign-ed25519ph-final-verify
-  (crypto-sign-ed25519ph-state* scheme-object scheme-object) int
-  "ffi_crypto_sign_ed25519ph_final_verify")
+(define-c-lambda crypto_sign_ed25519_detached
+  (scheme-object scheme-object scheme-object) int
+  "ffi_crypto_sign_ed25519_detached")
+
+(define-c-lambda crypto_sign_ed25519_verify_detached
+  (scheme-object scheme-object scheme-object) int
+  "ffi_crypto_sign_ed25519_verify_detached")
 
 );ffi
-
-;; Create state just once, similar to secp256k1 context
-(def ed25519ph-state
-  (make-u8vector (ffi-crypto-sign-ed25519ph-statebytes)))
-
-(def ed25519ph-mutex (make-mutex 'ed25519ph))
 
 (def (bytesN? x n) (and (u8vector? x) (= (u8vector-length x) n)))
 (def (bytes32? x) (bytesN? x 32))
 (def (bytes64? x) (bytesN? x 64))
 
-(defrule (with-ed25519ph-state f a ...)
-  (with-lock ed25519ph-mutex (lambda () (f ed25519ph-state a ...))))
-
-(defrule (with-ed25519ph-state/check f a ...)
-  (let ((n (with-ed25519ph-state f a ...)))
-    (unless (zero? n) (error "ed25519ph error" 'f))))
-
-;; : Pubkey <- Bytes32
-(def (ed25519ph-pubkey<-bytes bytes)
+;; : Pubkey <- Bytes
+(def (ed25519-pubkey<-bytes bytes)
   (unless (bytes32? bytes)
-    (error "bad bytes length" 'ed25519ph-pubkey<-bytes bytes))
+    (error "bad bytes length" 'ed25519-pubkey<-bytes bytes))
   bytes)
 
-;; : Bytes32 <- Pubkey
-(def (bytes<-ed25519ph-pubkey pubkey)
+;; : Bytes <- Pubkey
+(def (bytes<-ed25519-pubkey pubkey)
   (assert! (bytes32? pubkey))
   pubkey)
 
-;; : Sig <- Bytes64
-(def (ed25519ph-signature<-bytes bytes)
-  (assert! (bytes64? bytes))
+;; : Sig <- Bytes
+(def (ed25519-signature<-bytes bytes)
+  (unless (bytes64? bytes)
+    (error "bad bytes length" 'ed25519-signature<-bytes bytes))
   bytes)
 
-;; : Bytes64 <- Sig
-(def (bytes<-ed25519ph-signature sig)
+;; : Bytes <- Sig
+(def (bytes<-ed25519-signature sig)
   (assert! (bytes64? sig))
   sig)
 
 ;; : Bool <- Sig Bytes Pubkey
-;; (assert! (and (bytes64? sig) (bytes32? pubkey)))
-(def (verify-ed25519ph-signature sig msg pubkey)
-  (unless (bytes64? sig)
-    (error "Invalid signature type" sig))
-  (unless (bytes32? pubkey)
-    (error "Invalid public key type" pubkey))
-  (unless (u8vector? msg)
-    (error "Invalid message type" msg))
-
-  (display "ed25519ph-state*: ")
-  (display ed25519ph-state*)
-  (newline)
-
-  ;; Initialize state
-  ; (with-ed25519ph-state/check ffi-crypto-sign-ed25519ph-init)
-  ;; Update state with message
-  ; (with-ed25519ph-state/check ffi-crypto-sign-ed25519ph-update msg)
-  ;; Verify signature using state
-  ; (zero? (with-ed25519ph-state ffi-crypto-sign-ed25519ph-final-verify sig pubkey))
-  #t
-  )
+(def (verify-ed25519-signature sig msg pubkey)
+  (assert! (and (bytes64? sig) (bytes32? pubkey)))
+  (zero? (crypto_sign_ed25519_verify_detached sig msg pubkey)))
 
 ;; : Sig <- Bytes Seckey
-(def (make-ed25519ph-signature msg seckey)
-  (def sig (make-u8vector 64))
-  (with-ed25519ph-state/check ffi-crypto-sign-ed25519ph-init)
-  (with-ed25519ph-state/check ffi-crypto-sign-ed25519ph-update msg)
-  (with-ed25519ph-state ffi-crypto-sign-ed25519ph-final-create sig seckey)
+(def (make-ed25519-signature msg seckey)
+  (assert! (bytes64? seckey))
+  (def sig (make-u8vector crypto_sign_ed25519_BYTES))
+  (crypto_sign_ed25519_detached sig msg seckey)
   sig)
 
 ;; : Bool <- Seckey
-(def (verify-ed25519ph-seckey seckey)
-  (and (bytes64? seckey) #t))
+(def (verify-ed25519-seckey seckey)
+  (assert! (bytes64? seckey))
+  #t) ;; Ed25519 accepts any 64-byte secret key
 
 ;; : Pubkey <- Seckey
-(def (ed25519ph-pubkey<-seckey seckey)
+(def (ed25519-pubkey<-seckey seckey)
   (assert! (bytes64? seckey))
-  (def pubkey (make-u8vector 32))
-  (ffi-crypto-sign-ed25519-sk-to-pk pubkey seckey)
+  (def pubkey (make-u8vector crypto_sign_ed25519_PUBLICKEYBYTES))
+  (crypto_sign_ed25519_sk_to_pk pubkey seckey)
   pubkey)
 
-;; : Seckey <- Seed
-(def (ed25519ph-seckey<-seed seed)
+;; Generate a new keypair
+;; : (Values Pubkey Seckey)
+(def (ed25519-keypair)
+  (def pk (make-u8vector crypto_sign_ed25519_PUBLICKEYBYTES))
+  (def sk (make-u8vector crypto_sign_ed25519_SECRETKEYBYTES))
+  (crypto_sign_ed25519_keypair pk sk)
+  (values pk sk))
+
+;; Generate a keypair from seed
+;; : (Values Pubkey Seckey) <- Bytes32
+(def (ed25519-seed-keypair seed)
   (assert! (bytes32? seed))
-  (def seckey (make-u8vector 64))
-  (ffi-crypto-sign-ed25519-sk-to-seed seckey seed)
-  seckey)
+  (def pk (make-u8vector crypto_sign_ed25519_PUBLICKEYBYTES))
+  (def sk (make-u8vector crypto_sign_ed25519_SECRETKEYBYTES))
+  (crypto_sign_ed25519_seed_keypair pk sk seed)
+  (values pk sk))
 
+;; Extract public key from secret key
 ;; : Pubkey <- Seckey
-(def (ed25519ph-pubkey<-seckey-direct seckey)
-  (assert! (bytes64? seckey))
-  (def pubkey (make-u8vector 32))
-  (ffi-crypto-sign-ed25519-sk-to-pk pubkey seckey)
-  pubkey)
+(def (ed25519-sk-to-pk sk)
+  (assert! (bytes64? sk))
+  (def pk (make-u8vector crypto_sign_ed25519_PUBLICKEYBYTES))
+  (crypto_sign_ed25519_sk_to_pk pk sk)
+  pk)
+
+;; Extract seed from secret key
+;; : Bytes32 <- Seckey
+(def (ed25519-sk-to-seed sk)
+  (assert! (bytes64? sk))
+  (def seed (make-u8vector crypto_sign_ed25519_SEEDBYTES))
+  (crypto_sign_ed25519_sk_to_seed seed sk)
+  seed)
+
+;; Convert Ed25519 public key to Curve25519
+;; : Bytes32 <- Pubkey
+(def (ed25519-pk-to-curve25519 pk)
+  (assert! (bytes32? pk))
+  (def curve-pk (make-u8vector 32))
+  (crypto_sign_ed25519_pk_to_curve25519 curve-pk pk)
+  curve-pk)
+
+;; Convert Ed25519 secret key to Curve25519
+;; : Bytes32 <- Seckey
+(def (ed25519-sk-to-curve25519 sk)
+  (assert! (bytes64? sk))
+  (def curve-sk (make-u8vector 32))
+  (crypto_sign_ed25519_sk_to_curve25519 curve-sk sk)
+  curve-sk)
