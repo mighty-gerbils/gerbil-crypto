@@ -30,6 +30,21 @@ Finally, you need to install the following libraries:
 The nix recipe for `gerbil-crypto` installs these dependencies automatically.
 YMMV on other Linux distributions.
 
+Also, you need to install the `blst` library.
+```
+# Clone the repository  
+git clone https://github.com/supranational/blst.git
+
+# Build the library
+cd blst && ./build.sh
+
+# Copy the library and headers
+sudo cp libblst.a /usr/local/lib/ && sudo cp bindings/blst.h bindings/blst_aux.h /usr/local/include/
+
+# Clean up
+cd .. && rm -rf blst
+```
+
 ### Building
 
 Once all dependencies are installed, you may build with:
