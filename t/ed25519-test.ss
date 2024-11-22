@@ -34,7 +34,7 @@
   "6291d657deec24024827e69c3abe01a30ce548a284743a445e3680d7db5ac3ac18ff9b538d16f290ae67f760984dc6594a7c15e9716ed28dc027beceea1ec40a")
 
 (def (h x) (hex-encode x))
-(def (b s) 
+(def (b s)
   (if (string? s)
       (hex-decode s)
       s))
@@ -43,21 +43,21 @@
   (check-equal? (h (serialize (parse (b datum)))) datum))
 
 (def ed25519-test
-  (test-suite "test suite for libsodium/ed25519"
+  (test-suite "test suite for clan/crypto/ed25519"
     (test-case "parse and serialize"
       (check-parse/serialize ed25519-pubkey<-bytes bytes<-ed25519-pubkey pk1h)
       (check-parse/serialize ed25519-pubkey<-bytes bytes<-ed25519-pubkey pk2h)
       (check-parse/serialize ed25519-signature<-bytes bytes<-ed25519-signature sig1h)
       (check-parse/serialize ed25519-signature<-bytes bytes<-ed25519-signature sig2h))
-    
+
     (test-case "keypair generation from seed"
       (def seed (hex-decode (substring sk1h 0 64)))
       (defvalues (pk1 sk1-bytes) (ed25519-seed-keypair seed))
       (check-equal? (h pk1) pk1h)
       (def sk1 (import-secret-key/bytes sk1-bytes))
-      (check-equal? (h (ed25519-sk-to-seed (ed25519-seckey-data sk1))) 
+      (check-equal? (h (ed25519-sk-to-seed (ed25519-seckey-data sk1)))
                    (substring sk1h 0 64)))
-    
+
     (test-case "public key derivation"
       (def seed (hex-decode (substring sk1h 0 64)))
       (defvalues (pk1 sk1-bytes) (ed25519-seed-keypair seed))
@@ -67,40 +67,40 @@
       (defvalues (pk2 sk2-bytes) (ed25519-seed-keypair seed2))
       (def sk2 (import-secret-key/bytes sk2-bytes))
       (check-equal? (h (public-key<-secret-key sk2)) pk2h))
-    
+
     (test-case "signature verification"
-      (check-equal? 
-       (verify-ed25519-signature 
+      (check-equal?
+       (verify-ed25519-signature
         (b sig1h)
         (b msg1h)
         (b pk1h))
        #t)
-      
+
       (check-equal?
        (verify-ed25519-signature
         (b sig2h)
         (b msg2h)
         (b pk2h))
        #t)
-      
+
       (check-equal?
        (verify-ed25519-signature
         (b sig3h)
         (b msg3h)
         (b pk3h))
        #t))
-    
+
     (test-case "signature creation"
       (def msg1 (hex-decode msg1h))
       (defvalues (_ignored1 sk1-bytes) (ed25519-seed-keypair (hex-decode (substring sk1h 0 64))))
       (def sk1 (import-secret-key/bytes sk1-bytes))
       (check-equal? (h (make-ed25519-signature msg1 (ed25519-seckey-data sk1))) sig1h)
-      
+
       (def msg2 (hex-decode msg2h))
       (defvalues (_ignored2 sk2-bytes) (ed25519-seed-keypair (hex-decode (substring sk2h 0 64))))
       (def sk2 (import-secret-key/bytes sk2-bytes))
       (check-equal? (h (make-ed25519-signature msg2 (ed25519-seckey-data sk2))) sig2h))
-    
+
     (test-case "invalid signatures"
       (def bad-sig (b sig1h))
       (u8vector-set! bad-sig 0 (modulo (+ (u8vector-ref bad-sig 0) 1) 256))
@@ -110,15 +110,15 @@
         (b msg1h)
         (b pk1h))
        #f))
-    
+
     (test-case "key conversion"
       (defvalues (_ignored sk1-bytes) (ed25519-seed-keypair (hex-decode (substring sk1h 0 64))))
       (def sk1 (import-secret-key/bytes sk1-bytes))
       (check-equal? (h (ed25519-sk-to-seed (ed25519-seckey-data sk1)))
                    (substring sk1h 0 64))
-      
+
       (def curve-pk (ed25519-pk-to-curve25519 (b pk1h)))
       (check-equal? (u8vector-length curve-pk) 32)
-      
+
       (def curve-sk (ed25519-sk-to-curve25519 (ed25519-seckey-data sk1)))
       (check-equal? (u8vector-length curve-sk) 32))))

@@ -7,7 +7,7 @@
 
 ;; blake2-test : TestSuite
 (def blake2-test
-  (test-suite "test suite for glow/crypto/blake2"
+  (test-suite "test suite for clan/crypto/blake2"
     (test-case "digest test vectors for blake2b"
       (for-each (match <> ([h s] (check-equal? (hex-encode (blake2b<-string s)) h)))
                 [;; Vector from https://en.wikipedia.org/wiki/BLAKE_(hash_function)#BLAKE2
