@@ -26,7 +26,7 @@
   (check-equal? (h (serialize (parse (b datum)))) datum))
 
 (def secp256k1-test
-  (test-suite "test suite for glow/crypto/secp256k1"
+  (test-suite "test suite for clan/crypto/secp256k1"
     (test-case "parse and serialize"
       (check-parse/serialize secp256k1-pubkey<-bytes bytes<-secp256k1-pubkey pk1h)
       (check-parse/serialize secp256k1-pubkey<-bytes bytes<-secp256k1-pubkey pk2h)

@@ -18,15 +18,15 @@
 (def (build-spec)
   [[gxc: "keccak" "-cc-options" (format "-I~a" here)]
    [static-include: "keccak-tiny-unrolled.c"]
-   "secp256k1-ffi" "secp256k1" "blake2"
+   "ed25519-ffi" "ed25519" "secp256k1-ffi" "secp256k1" "blake2"
    "password" "random" "version"])
 
 (init-build-environment!
  name: "Gerbil-crypto"
  deps: '("clan" "clan/poo")
  spec: build-spec
- pkg-config-libs: '("libsecp256k1")
- nix-deps: '("secp256k1"))
+ pkg-config-libs: '("libsecp256k1" "libsodium")
+ nix-deps: '("secp256k1" "libsodium"))
 
 (define-entry-point (nix)
   (help: "Build using nix-build" getopt: [])

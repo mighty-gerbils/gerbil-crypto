@@ -7,7 +7,7 @@
 
 ;; keccak-test : TestSuite
 (def keccak-test
-  (test-suite "test suite for glow/crypto/keccak"
+  (test-suite "test suite for clan/crypto/keccak"
     (test-case "digest test vectors for keccak256"
       (for-each (match <> ([h s] (check-equal? (hex-encode (keccak256<-string s)) h)))
                 [;; Vectors from https://github.com/ethereum/eth-hash/blob/master/tests/backends/test_results.py
