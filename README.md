@@ -26,13 +26,14 @@ which `gxpkg` may automatically download for you.
 Finally, you need to install the following libraries:
 - `libsecp256k1`: On Debian/Ubuntu, install with `apt install libsecp256k1-dev`
 - `libsodium`: On Debian/Ubuntu, install with `apt install libsodium-dev`
+- `libblst`: You might have to install with `git clone https://github.com/supranational/blst.git`
 
 The nix recipe for `gerbil-crypto` installs these dependencies automatically.
 YMMV on other Linux distributions.
 
-Also, you need to install the `blst` library.
+If you need to install the `blst` library from git, you might proceed as follows:
 ```
-# Clone the repository  
+# Clone the repository
 git clone https://github.com/supranational/blst.git
 
 # Build the library
@@ -43,6 +44,11 @@ sudo cp libblst.a /usr/local/lib/ && sudo cp bindings/blst.h bindings/blst_aux.h
 
 # Clean up
 cd .. && rm -rf blst
+
+# Export paths for the library so GCC can find it, if not already in your environment
+# You might want to edit your ~/.bashrc ~/.zshenv or some such to include these:
+export C_INCLUDE_PATH=/usr/local/include
+export LIBRARY_PATH=/usr/local/lib
 ```
 
 ### Building
