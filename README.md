@@ -9,7 +9,7 @@ More primitives may be added in the future.
 
 ## Copyright and License
 
-Copyright 2020 Mutual Knowledge Systems, Inc. All rights reserved.
+Copyright 2020 MuKn, Inc. All rights reserved.
 Gerbil-crypto is distributed under the Apache License, version 2.0. See the file [LICENSE](LICENSE).
 
 ## Installation instructions
@@ -24,6 +24,7 @@ and the [Gerbil-POO](https://github.com/fare/gerbil-poo) object system,
 which `gxpkg` may automatically download for you.
 
 Finally, you need to install the following libraries:
+
 - `libsecp256k1`: On Debian/Ubuntu, install with `apt install libsecp256k1-dev`
 - `libsodium`: On Debian/Ubuntu, install with `apt install libsodium-dev`
 
