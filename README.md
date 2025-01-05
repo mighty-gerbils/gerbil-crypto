@@ -9,7 +9,7 @@ More primitives may be added in the future.
 
 ## Copyright and License
 
-Copyright 2020 MuKn, Inc. All rights reserved.
+Copyright 2020 MuKn Inc All rights reserved.
 Gerbil-crypto is distributed under the Apache License, version 2.0. See the file [LICENSE](LICENSE).
 
 ## Installation instructions
