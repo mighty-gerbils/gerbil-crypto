@@ -202,7 +202,7 @@ static int ffi_secp256k1_ec_pubkey_combine(const secp256k1_context* ctx, secp256
   int count;
   if (size > 1024) { return 0; }
   for (count = 0; count < size; count++) {
-        cpks[count] = ___CAST(secp256k1_pubkey*,___FIELD(___VECTORREF(ins,___FIX(count)),___FOREIGN_PTR));
+        cpks[count] = ___CAST(secp256k1_pubkey*,___FIELD(FOREIGN,___VECTORREF(ins,___FIX(count)),___FOREIGN_PTR));
   }
   return secp256k1_ec_pubkey_combine(ctx, out, cpks, size);
 }

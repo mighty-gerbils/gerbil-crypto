@@ -77,5 +77,5 @@ secp256k1-pubkey-tweak-add!
 secp256k1-seckey-tweak-mul!
 secp256k1-pubkey-tweak-mul!
 secp256k1-context-randomize!
-secp256k1-pubkey-combine
+secp256k1-pubkey-combine -- especially test this one because of the ___FIELD(FOREIGN, ...) that is untested.
 |#
