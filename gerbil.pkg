@@ -1,4 +1,4 @@
 ;; Extra cryptographic primitives for Gerbil
 (package: clan/crypto
- depend: ("github.com/mighty-gerbils/gerbil-utils"
-          "github.com/mighty-gerbils/gerbil-poo"))
+ depend: ("git.cons.io/mighty-gerbils/gerbil-utils"
+          "git.cons.io/mighty-gerbils/gerbil-poo"))

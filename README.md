@@ -19,8 +19,8 @@ Gerbil-crypto is distributed under the Apache License, version 2.0. See the file
 You need to first install the [Gerbil Scheme](https://cons.io) compiler.
 Gerbil depends on `openssl` so you'll have it installed.
 
-Then you must install the [Gerbil Clan](https://github.com/fare/gerbil-utils) utilities
-and the [Gerbil-POO](https://github.com/fare/gerbil-poo) object system,
+Then you must install the [Gerbil Clan](https://git.cons.io/mighty-gerbils/gerbil-utils) utilities
+and the [Gerbil-POO](https://git.cons.io/mighty-gerbils/gerbil-poo) object system,
 which `gxpkg` may automatically download for you.
 
 Finally, you need to install the following libraries:

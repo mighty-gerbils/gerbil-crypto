@@ -4,8 +4,8 @@
 ;; ./build.ss [cmd]
 ;; where [cmd] is typically left empty (same as "compile")
 ;; Note that may you need to first:
-;;   gxpkg install github.com/fare/gerbil-utils
-;;   gxpkg install github.com/fare/gerbil-poo
+;;   gxpkg install git.cons.io/mighty-gerbils/gerbil-utils
+;;   gxpkg install git.cons.io/mighty-gerbils/gerbil-poo
 
 (import
   :std/cli/multicall
